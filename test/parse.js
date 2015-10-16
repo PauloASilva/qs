@@ -475,4 +475,14 @@ describe('parse()', function () {
         expect(Qs.parse('a[]=b&a[c]=d', { plainObjects: true })).to.deep.equal(expectedArray);
         done();
     });
+
+    it.only('returns parameters order', function (done) {
+
+        var returnValue = Qs.parse('a=foo&b=bar', { 'preserveOrder': true });
+
+        expect(returnValue)
+            .to.deep.equal({ 'a': 'foo', 'b': 'bar', '__order__': ['a','b'] });
+
+        done();
+    });
 });
