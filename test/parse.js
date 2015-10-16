@@ -478,10 +478,20 @@ describe('parse()', function () {
 
     it.only('returns parameters order', function (done) {
 
-        var returnValue = Qs.parse('a=foo&b=bar', { 'preserveOrder': true });
+        expect(Qs.parse('a=1&b=2&c=3', { reportOrder: true }))
+            .to.deep.equal({ __order__: [ 'a', 'b', 'c' ], a: '1', b: '2', c: '3' });
 
-        expect(returnValue)
-            .to.deep.equal({ 'a': 'foo', 'b': 'bar', '__order__': ['a','b'] });
+        expect(Qs.parse('a[]=1&b=2&a[]=3', { reportOrder: true }))
+            .to.deep.equal({ __order__: [ 'a[]', 'b', 'a[]' ], a: [ '1', '3' ], b: '2' });
+
+        expect(Qs.parse('a=1&b=2&a=3', { reportOrder: true }))
+            .to.deep.equal({ __order__: [ 'a', 'b', 'a' ], a: [ '1', '3' ], b: '2' });
+
+        expect(Qs.parse('a[foo]=1&b=2&a[bar]=3', { reportOrder: true }))
+            .to.deep.equal({ __order__: [ 'a[foo]', 'b', 'a[bar]' ], a: { foo: '1', bar: '3' }, b: '2' });
+
+        expect(Qs.parse('a.a=1&b=2&a.b=3', { reportOrder: true, allowDots: true }))
+            .to.deep.equal({ __order__: [ 'a.a', 'b', 'a.b' ], a: { a: '1', b: '3' },  b: '2' });
 
         done();
     });

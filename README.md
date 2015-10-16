@@ -198,10 +198,24 @@ Qs.parse('a[][b]=c');
 ### Handling keys order
 
 If for some reason you need to know the original query string parameters order,
-you can tell the parser to return it on resulting Object
+you can tell the parser to return it on resulting Object passing the option
+`reportOrder`
 
 ```javascript
-Qs.parse('a=foo&b=bar', {})
+Qs.parse('a=1&b=2&c=3', { reportOrder: true });
+// { __order__: [ 'a', 'b', 'c' ], a: '1', b: '2', c: '3' }
+
+Qs.parse('a[]=1&b=2&a[]=3', { reportOrder: true });
+// { __order__: [ 'a[]', 'b', 'a[]' ], a: [ '1', '3' ], b: '2' }
+
+Qs.parse('a=1&b=2&a=3', { reportOrder: true });
+// { __order__: [ 'a', 'b', 'a' ], a: [ '1', '3' ], b: '2' }
+
+Qs.parse('a[foo]=1&b=2&a[bar]=3', { reportOrder: true });
+// { __order__: [ 'a[foo]', 'b', 'a[bar]' ], a: { foo: '1', bar: '3' }, b: '2' }
+
+Qs.parse('a.a=1&b=2&a.b=3', { reportOrder: true, allowDots: true });
+// { __order__: [ 'a.a', 'b', 'a.b' ], a: { a: '1', b: '3' },  b: '2' }
 ```
 
 ### Stringifying
